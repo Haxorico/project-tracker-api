@@ -1,0 +1,5 @@
+**/dist
+
+/mongodb
+/node_modules
+package-lock.lock
