@@ -35,11 +35,10 @@ router.put('/:id', async (req, res, next) => {
 //#ASK_ALEX - This function is never being called!
 router.delete('/:id', function (req, res) {
   const db = require('../libs/mongodb').getDb();
-  const dd = req.params.id;
-  console.log("###########");
-  console.log(dd);
-  db.collection.deleteOne({ id: dd }).then().catch(err => { 
-    console.log("#######");
+  const collection = db.collection('users');
+  collection.deleteOne({ id: req.params.id }).then(user => {
+    res.end();
+  }).catch(err => {  
     console.log(err);
   });
 })
