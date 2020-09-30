@@ -6,9 +6,18 @@ const COLLECTION_NAME = 'tasks';
 router.get('/', async (req, res, next) => {
   const db = require('../libs/mongodb').getDb();
   const collection = db.collection(COLLECTION_NAME);
-  collection.find({}).toArray((error, tasks) => {
-    res.json(tasks);
-  });
+  const query = req.query
+  const pid = query.project_id;
+  if (pid) {
+    collection.find({project_id : pid}).toArray((error, tasks) => {
+      res.json(tasks);
+    });
+  }
+  else {
+    collection.find({}).toArray((error, tasks) => {
+      res.json(tasks);
+    });
+  }
 });
 
 router.get('/:id', function (req, res) {
@@ -36,7 +45,7 @@ router.delete('/:id', function (req, res) {
   const collection = db.collection(COLLECTION_NAME);
   collection.deleteOne({ id: req.params.id }).then(task => {
     res.end();
-  }).catch(err => {  
+  }).catch(err => {
     console.log(err);
   });
 })
