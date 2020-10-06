@@ -8,6 +8,8 @@ router.get('/', async (req, res, next) => {
   const collection = db.collection(COLLECTION_NAME);
   const query = req.query
   const pid = query.project_id;
+  const wid = query.worker_id;
+  const rid = query.reporter_id;
   if (pid) {
     collection.find({project_id : pid}).toArray((error, tasks) => {
       res.json(tasks);
