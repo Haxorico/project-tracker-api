@@ -10,16 +10,22 @@ router.get('/', async (req, res, next) => {
   const pid = query.project_id;
   const wid = query.worker_id;
   const rid = query.reporter_id;
-  if (pid) {
-    collection.find({project_id : pid}).toArray((error, tasks) => {
-      res.json(tasks);
-    });
-  }
-  else {
-    collection.find({}).toArray((error, tasks) => {
-      res.json(tasks);
-    });
-  }
+  const user_id = query.user_id;
+
+  const searchObj = {};
+
+    if (user_id) {
+        searchObj.team_members_ids = parseInt(user_id);
+        collection.find( { $or: [ { worker_id : user_id }, { reporter_id : user_id } ] } ).toArray((error, tasks) => {
+          res.json(tasks);
+        });
+    }
+
+    else {
+      collection.find({}).toArray((error, tasks) => {
+        res.json(tasks);
+      });
+    }
 });
 
 router.get('/:id', function (req, res) {
