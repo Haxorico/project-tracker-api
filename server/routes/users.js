@@ -1,45 +1,34 @@
 const express = require('express');
 const router = express.Router();
-
-/* GET users listing. */
+const UserService = require('../services/users');
 
 router.get('/', async (req, res, next) => {
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection('users');
-  collection.find({}).toArray((error, users) => {
-    res.json(users);
-  });
+    const user_id = req.query.id;
+    const searchObj = {};
+    //#ASK_ALEX Should searchObj be here or in the service?
+    if (user_id) {
+        searchObj.id = user_id;
+    }
+    const data = await UserService.GetUsers(searchObj);
+    res.json(data);
 });
 
-router.get('/:id', function (req, res) {
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection('users');
-  collection.find({ id: req.params.id }).next().then(user => {
-    res.json(user);
-  });
+router.get('/:id', async (req, res, next) => {
+  const id = req.params.id;
+  const data = await UserService.GetUser(id);
+  res.json(data);
 });
 
-/* POST user. */
 router.post('/', async (req, res, next) => {
-  const db = require('../libs/mongodb').getDb();
-  db.collection('users').insertOne(req.body)
+  UserService.AddUser(req.body);
 });
 
-/* PUT (update) user. */
 router.put('/:id', async (req, res, next) => {
-  const db = require('../libs/mongodb').getDb();
-  db.collection('users').updateOne({ id: req.params.id }, { $set: req.body });
+  UserService.UpdateUser(req.body);
 });
 
 router.delete('/:id', function (req, res) {
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection('users');
-  collection.deleteOne({ id: req.params.id }).then(user => {
-    res.end();
-  }).catch(err => {  
-    console.log(err);
-  });
+  UserService.DeleteUser(req.body);
 })
-
 
 module.exports = router;
