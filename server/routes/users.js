@@ -3,19 +3,25 @@ const router = express.Router();
 const UserService = require('../services/users');
 
 router.get('/', async (req, res, next) => {
-    const user_id = req.query.id;
-    const searchObj = {};
-    //#ASK_ALEX Should searchObj be here or in the service?
-    if (user_id) {
-        searchObj.id = user_id;
-    }
+  const user_id = req.query.id;
+  const searchObj = {};
+  if (user_id) {
+    searchObj.id = user_id;
+  }
+  if (UserService.VerifyToken(req.query.token)) {
     const data = await UserService.GetUsers(searchObj);
     res.json(data);
+  }
+  else {
+    res.json("Invalid Token");
+    return;
+  }
 });
 
 router.get('/:id', async (req, res, next) => {
   const id = req.params.id;
   const data = await UserService.GetUser(id);
+
   res.json(data);
 });
 
@@ -25,26 +31,12 @@ router.post('/', async (req, res, next) => {
 });
 
 router.post('/:login', async (req, res, next) => {
-  //#NOTES_FOR_ALEX:
-  //this entire thing will ofcourse be moved into the services.
-  //This is just a prototype to understand from you if it is okay and should I build upon it.
-  //Also at the moment I only return true or false. If all is well I will proceed with the token.
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection('users');
-  const user_to_find = req.body;
-  
-  console.log("#############");
-  collection.find({name: user_to_find.name}).next().then(user => {
-    console.log("user found");
-    if (user.password == user_to_find.password){
-      console.log("passwords match");
-      res.json(true);
-    }
-    else{
-      console.log("passwords do not match");
-      res.json(false);
-    }
-  });
+  //#TODO - changed boolean to token
+  //At the moment I only return true or false. If all is well I will proceed with the token.
+  const data = await UserService.LoginUser(req.body.name, req.body.password);
+  //console.log(data);
+  res.json(data);
+
 });
 
 router.put('/:id', async (req, res, next) => {
