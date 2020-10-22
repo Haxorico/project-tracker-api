@@ -40,4 +40,7 @@ const getDb = () => {
   return db;
 }
 
-module.exports = { connectionMiddleware, getDb}
+const getCollection = (name) => {
+  return getDb().collection(name);
+}
+module.exports = { connectionMiddleware, getDb, getCollection} 
