@@ -6,9 +6,12 @@ const logger = require('morgan');
 const cors = require('cors');
 
 const indexRouter = require('./routes/index');
+const loginRouter = require('./routes/login');
 const usersRouter = require('./routes/users');
 const tasksRouter = require('./routes/tasks');
 const projectsRouter = require('./routes/projects');
+
+const auth = require('./services/auth');
 
 const { connectionMiddleware } = require('./libs/mongodb');
 
@@ -27,14 +30,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/tasks', tasksRouter);
-app.use('/projects', projectsRouter);
+app.use('/login', loginRouter);
+app.use('/users', auth, usersRouter);
+app.use('/tasks', auth, tasksRouter);
+app.use('/projects', auth, projectsRouter);
 
-// catch 404 and forward to error handler
+//catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
-});
+}); 
 
 // error handler
 app.use(function(err, req, res, next) {

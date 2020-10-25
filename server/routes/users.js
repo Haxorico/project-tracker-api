@@ -5,47 +5,49 @@ const UserService = require('../services/users');
 router.get('/', async (req, res, next) => {
   const user_id = req.query.id;
   const searchObj = {};
-  if (user_id) {
+  if (user_id)
     searchObj.id = user_id;
-  }
-  if (UserService.VerifyToken(req.query.token)) {
-    const data = await UserService.GetUsers(searchObj);
+  UserService.GetUsers(searchObj).then(data => {
     res.json(data);
-  }
-  else {
-    res.json("Invalid Token");
-    return;
-  }
+  }).catch(err => {
+    res.json(err);
+  });
 });
 
 router.get('/:id', async (req, res, next) => {
-  const id = req.params.id;
-  const data = await UserService.GetUser(id);
-
-  res.json(data);
+  const id = { id: req.params.id };
+  UserService.GetUser(id).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
 });
-
 
 router.post('/', async (req, res, next) => {
-  UserService.AddUser(req.body);
-});
-
-router.post('/:login', async (req, res, next) => {
-  //#TODO - changed boolean to token
-  //At the moment I only return true or false. If all is well I will proceed with the token.
-  const data = await UserService.LoginUser(req.body.name, req.body.password);
-  //console.log(data);
-  res.json(data);
-
-});
-
-router.put('/:id', async (req, res, next) => {
-  UserService.UpdateUser(req.body);
+  UserService.AddUser(req.body).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
 });
 
 
-router.delete('/:id', function (req, res) {
-  UserService.DeleteUser(req.body);
-})
+router.put('/', async (req, res, next) => {
+  const user = req.body;
+  UserService.UpdateUser(user).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
+});
+
+router.delete('/:id', async (req, res, next) => {
+  const user_id = req.params;
+  UserService.DeleteUser(user_id).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
+});
 
 module.exports = router;

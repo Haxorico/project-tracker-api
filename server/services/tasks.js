@@ -1,37 +1,26 @@
-const ent_name = 'projects';
+const ent_name = 'tasks';
 
-function GetProjects(query_paramters) {
+function GetTasks(query_paramters) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);
-        collection.find(query_paramters).toArray((error, projects) => {
+        collection.find(query_paramters).toArray((error, data) => {
             if (error) {
                 reject(error);
                 return;
             }
-            resolve(projects);
+            resolve(data);
         });
     });
 }
 
-function GetProject(query_paramters) {
+function GetTask(query_paramters) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);
-        collection.find(query_paramters).next().then(project => {
-            if (project == null) {
-                reject("Project not found");
+        collection.find(query_paramters).next().then(data => {
+            if (data == null) {
+                reject("Task not found");
                 return;
             }
-            resolve(project);
-        }).catch(err => {
-            reject(err);
-        });
-    });
-}
-
-function AddProject(project_to_add) {
-    return new Promise((resolve, reject) => {
-        const collection = require('../libs/mongodb').getCollection(ent_name);
-        collection.insertOne(project_to_add).then(data => {
             resolve(data);
         }).catch(err => {
             reject(err);
@@ -39,12 +28,23 @@ function AddProject(project_to_add) {
     });
 }
 
-function UpdateProject(project_to_update) {
+function AddTask(task_to_add) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);
-        collection.updateOne({ id: project_to_update.id }, { $set: project_to_update }).then(data => {
+        collection.insertOne(task_to_add).then(data => {
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+        });
+    });
+}
+
+function UpdateTask(task_to_update) {
+    return new Promise((resolve, reject) => {
+        const collection = require('../libs/mongodb').getCollection(ent_name);
+        collection.updateOne({ id: task_to_update.id }, { $set: task_to_update }).then(data => {
             if (data.matchedCount < 1) {
-                reject(project_to_update.id + " <- This ID was NOT Found");
+                reject(task_to_update.id + " <- This ID was NOT Found");
                 return;
             }
             resolve({});
@@ -53,12 +53,12 @@ function UpdateProject(project_to_update) {
         });
     });
 }
-function DeleteProject(project_to_delete) {
+function DeleteTask(task_to_delete) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);
-        collection.deleteOne({ id: project_to_delete.id }).then(data => {
+        collection.deleteOne({ id: task_to_delete.id }).then(data => {
             if (data.deletedCount < 1) {
-                reject(project_to_delete.id + " <- This ID was NOT Found");
+                reject(task_to_delete.id + " <- This ID was NOT Found");
                 return;
             }
             resolve({});
@@ -68,4 +68,4 @@ function DeleteProject(project_to_delete) {
     });
 }
 
-module.exports = { GetProjects, GetProject, AddProject, UpdateProject, DeleteProject }
+module.exports = { GetTasks, GetTask, AddTask, UpdateTask, DeleteTask }

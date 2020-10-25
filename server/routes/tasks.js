@@ -1,62 +1,68 @@
 const express = require('express');
 const router = express.Router();
-const COLLECTION_NAME = 'tasks';
-/* GET tasks listing. */
+const TaskService = require('../services/tasks');
 
 router.get('/', async (req, res, next) => {
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection(COLLECTION_NAME);
   const query = req.query
   const pid = query.project_id;
   const wid = query.worker_id;
   const rid = query.reporter_id;
-  const user_id = query.user_id;
-
   const searchObj = {};
-
-    if (user_id) {
-        searchObj.team_members_ids = parseInt(user_id);
-        collection.find( { $or: [ { worker_id : user_id }, { reporter_id : user_id } ] } ).toArray((error, tasks) => {
-          res.json(tasks);
-        });
-    }
-
-    else {
-      collection.find({}).toArray((error, tasks) => {
-        res.json(tasks);
-      });
-    }
+  if (pid)
+    searchObj.id = pid;
+  if (wid)
+    searchObj.worker_id = wid;
+  if (rid)
+    searchObj.reporter_id = rid;
+  TaskService.GetTasks(searchObj).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
 });
 
 router.get('/:id', function (req, res) {
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection(COLLECTION_NAME);
-  collection.find({ id: req.params.id }).next().then(task => {
-    res.json(task);
+  const id = req.params.id;
+  TaskService.GetTask(id).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
   });
 });
 
-/* POST task. */
 router.post('/', async (req, res, next) => {
-  const db = require('../libs/mongodb').getDb();
-  db.collection(COLLECTION_NAME).insertOne(req.body)
+  TaskService.AddTask(req.body).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
 });
 
-/* PUT (update) task. */
 router.put('/:id', async (req, res, next) => {
-  const db = require('../libs/mongodb').getDb();
-  db.collection(COLLECTION_NAME).updateOne({ id: req.params.id }, { $set: req.body });
+  TaskService.UpdateTask(req.body).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.json(err);
+  });
 });
+
+/* 
+router.delete('/:id', function (req, res) {
+    ProjectService.DeleteProject(req.body).then(data => {
+        res.json(data);
+    }).catch(err => {
+        res.json(err);
+    });;
+});
+*/
 
 router.delete('/:id', function (req, res) {
-  const db = require('../libs/mongodb').getDb();
-  const collection = db.collection(COLLECTION_NAME);
-  collection.deleteOne({ id: req.params.id }).then(task => {
-    res.end();
+  TaskService.DeleteTask(req.body).then(data => {
+    res.json(data);
   }).catch(err => {
-    console.log(err);
+    res.json(err);
   });
-})
+});
 
 
 module.exports = router;
