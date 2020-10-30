@@ -1,54 +1,59 @@
-/* const ent_name = 'users'; */
 const jwt = require('jsonwebtoken');
 const KEY = "_[Ask#Al3xXx!]_";
-/* const EXP_TIME = 1000 * 60 * 2;
- */
-/* function LoginUser(user_name, user_password) {
+const ent_name = 'users';
+const md5 = require('md5');
+const EXP_TIME = '30s';
+
+function VerifyToken(token) {
+    return new Promise((resolve, reject) => {
+        try {
+            if (token == undefined) {
+                reject("NO TOKNE GIVEN!");
+                return;
+            }
+            jwt.verify(token, KEY, function (err, decoded) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(decoded);
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
+    });
+}
+
+function LoginUser(user_name, user_password) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);
         user_password = md5(user_password);
         collection.find({ name: user_name }).next().then(user => {
+            if (user == null) {
+                reject({ err: "User not found" });
+                return;
+            }
             if (user.password == user_password) {
-                const token = jwt.sign({ exp: EXP_TIME, data: user }, KEY);
+                const token = jwt.sign({ data: user }, KEY, { expiresIn: EXP_TIME });
                 resolve({ user, token });
             }
+            //#For_Alex - I know it is not safe to give this message. this is for testing. Can change this later 
             else {
-                reject(false);
+                reject({ err: "password does NOT match" });
             }
         }).catch(err => {
             reject(err);
         });
     });
-} */
-/* 
-function VerifyToken(token) {
-    try {
-        let decoded = jwt.verify(token, KEY);
-        if (decoded)
-            return true;
-    } catch (err) {
-        return err;
-    }
-} */
-
-module.exports = (req, res, next) => {
-    try {
-        const token = req.query.token;
-        if (token == undefined)
-        {
-            console.log("NO TOKEN GIVEN",req.query);
-            throw "NO TOKNE GIVEN!";
-        }
-        const decoded = jwt.verify(token, KEY);
-        if (decoded)
-            next();
-        else {
-            //console.log(decoded);
-            throw decoded;
-        }
-    }
-    catch (e){
-        console.log(e);
-        res.status(401).json(e);
-    }
 }
+
+function Auth(req, res, next) {
+    const token = req.header('Authorization');
+    VerifyToken(token).then(data => {
+        res.json(data);
+    }).catch(err => {
+        res.status(401).json(err);
+    });
+}
+module.exports = { Auth, LoginUser, VerifyToken }

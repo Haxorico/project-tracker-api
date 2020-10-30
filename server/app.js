@@ -11,7 +11,7 @@ const usersRouter = require('./routes/users');
 const tasksRouter = require('./routes/tasks');
 const projectsRouter = require('./routes/projects');
 
-const auth = require('./services/auth');
+const { Auth } = require('./services/auth');
 
 const { connectionMiddleware } = require('./libs/mongodb');
 
@@ -31,9 +31,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
-app.use('/users', auth, usersRouter);
-app.use('/tasks', auth, tasksRouter);
-app.use('/projects', auth, projectsRouter);
+app.use('/users', Auth, usersRouter);
+app.use('/tasks', Auth, tasksRouter);
+app.use('/projects', Auth, projectsRouter);
 
 //catch 404 and forward to error handler
 app.use(function(req, res, next) {

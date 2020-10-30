@@ -47,7 +47,7 @@ function UpdateTask(task_to_update) {
                 reject(task_to_update.id + " <- This ID was NOT Found");
                 return;
             }
-            resolve({});
+            resolve();
         }).catch(err => {
             reject(err);
         });

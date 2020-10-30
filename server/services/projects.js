@@ -47,12 +47,13 @@ function UpdateProject(project_to_update) {
                 reject(project_to_update.id + " <- This ID was NOT Found");
                 return;
             }
-            resolve({});
+            resolve();
         }).catch(err => {
             reject(err);
         });
     });
 }
+
 function DeleteProject(project_to_delete) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);
