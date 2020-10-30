@@ -3,12 +3,7 @@ const router = express.Router();
 const UserService = require('../services/users');
 
 router.get('/', async (req, res, next) => {
-    const user_id = req.query.id;
-    const searchObj = {};
-    //#ASK_ALEX Should searchObj be here or in the service?
-    if (user_id) {
-        searchObj.id = user_id;
-    }
+    const searchObj = req.query;
     const data = await UserService.GetUsers(searchObj);
     res.json(data);
 });
