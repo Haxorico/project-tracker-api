@@ -24,6 +24,7 @@ function GetTask(query_paramters) {
             resolve(data);
         }).catch(err => {
             reject(err);
+
         });
     });
 }
@@ -53,6 +54,7 @@ function UpdateTask(task_to_update) {
         });
     });
 }
+
 function DeleteTask(task_to_delete) {
     return new Promise((resolve, reject) => {
         const collection = require('../libs/mongodb').getCollection(ent_name);

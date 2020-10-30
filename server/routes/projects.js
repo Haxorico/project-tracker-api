@@ -50,6 +50,7 @@ router.delete('/:id', function (req, res) {
     }).catch(err => {
         res.json(err);
     });
+
 });
 
 module.exports = router;
