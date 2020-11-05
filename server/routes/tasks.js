@@ -1,4 +1,5 @@
 const express = require('express');
+const tasks = require('../services/tasks');
 const router = express.Router();
 const TaskService = require('../services/tasks');
 
@@ -46,23 +47,13 @@ router.put('/:id', async (req, res, next) => {
   });
 });
 
-/* 
 router.delete('/:id', function (req, res) {
-    ProjectService.DeleteProject(req.body).then(data => {
-        res.json(data);
-    }).catch(err => {
-        res.json(err);
-    });;
-});
-*/
 
-router.delete('/:id', function (req, res) {
   TaskService.DeleteTask(req.body).then(data => {
     res.json(data);
   }).catch(err => {
     res.json(err);
   });
 });
-
 
 module.exports = router;
