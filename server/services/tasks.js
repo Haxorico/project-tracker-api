@@ -1,51 +1,73 @@
 const ent_name = 'tasks';
 
 function GetTasks(query_paramters) {
-    //#TODO Add more and use the actual query paramters.
-    const collection = require('../libs/mongodb').getCollection(ent_name);
-    const pid = query_paramters.project_id;
-    const wid = query_paramters.worker_id;
-    const rid = query_paramters.reporter_id;
-    const user_id = query_paramters.user_id;
-    const searchObj = {};
-
     return new Promise((resolve, reject) => {
-        if (user_id) {
-            searchObj.team_members_ids = puser_id;
-            collection.find({ $or: [{ worker_id: user_id }, { reporter_id: user_id }] }).toArray((error, tasks) => {
-                resolve(tasks);
-            });
-        }
-        else {
-            collection.find({}).toArray((error, tasks) => {
-                resolve(tasks);
-            });
-        }
+        const collection = require('../libs/mongodb').getCollection(ent_name);
+        collection.find(query_paramters).toArray((error, data) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(data);
+        });
     });
 }
 
-async function GetTask(query_paramters) {
-    const collection = require('../libs/mongodb').getCollection(ent_name);
+function GetTask(query_paramters) {
     return new Promise((resolve, reject) => {
-        collection.find(query_paramters).next().then(task => {
-            resolve(task);
+        const collection = require('../libs/mongodb').getCollection(ent_name);
+        collection.find(query_paramters).next().then(data => {
+            if (data == null) {
+                reject("Task not found");
+                return;
+            }
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+
         });
     });
 }
 
 function AddTask(task_to_add) {
-    const collection = require('../libs/mongodb').getCollection(ent_name);
-    collection.insertOne(task_to_add);
+    return new Promise((resolve, reject) => {
+        const collection = require('../libs/mongodb').getCollection(ent_name);
+        collection.insertOne(task_to_add).then(data => {
+            resolve(data);
+        }).catch(err => {
+            reject(err);
+        });
+    });
 }
 
 function UpdateTask(task_to_update) {
-    const collection = require('../libs/mongodb').getCollection(ent_name);
-    collection.updateOne({ id: task_to_update.id }, task_to_update);
+    return new Promise((resolve, reject) => {
+        const collection = require('../libs/mongodb').getCollection(ent_name);
+        collection.updateOne({ id: task_to_update.id }, { $set: task_to_update }).then(data => {
+            if (data.matchedCount < 1) {
+                reject(task_to_update.id + " <- This ID was NOT Found");
+                return;
+            }
+            resolve();
+        }).catch(err => {
+            reject(err);
+        });
+    });
 }
 
 function DeleteTask(task_to_delete) {
-    const collection = require('../libs/mongodb').getCollection(ent_name);
-    collection.deleteOne({ id: task_to_delete.id });
+    return new Promise((resolve, reject) => {
+        const collection = require('../libs/mongodb').getCollection(ent_name);
+        collection.deleteOne({ id: task_to_delete.id }).then(data => {
+            if (data.deletedCount < 1) {
+                reject(task_to_delete.id + " <- This ID was NOT Found");
+                return;
+            }
+            resolve({});
+        }).catch(err => {
+            reject(err);
+        });
+    });
 }
 
 module.exports = { GetTasks, GetTask, AddTask, UpdateTask, DeleteTask }

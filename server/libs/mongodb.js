@@ -43,4 +43,6 @@ const getDb = () => {
 const getCollection = (name) => {
   return getDb().collection(name);
 }
-module.exports = { connectionMiddleware, getDb, getCollection} 
+
+module.exports = { connectionMiddleware, getDb, getCollection}
+
