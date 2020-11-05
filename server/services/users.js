@@ -1,6 +1,7 @@
 const ent_name = 'users';
 
 function GetUsers(query_paramters) {
+  console.log("Im in the GetUsers Services");
   return new Promise((resolve, reject) => {
     const collection = require('../libs/mongodb').getCollection(ent_name);
     collection.find(query_paramters).toArray((error, users) => {
@@ -15,6 +16,7 @@ function GetUsers(query_paramters) {
 }
 
 function GetUser(query_paramters) {
+  console.log("Im the singe get user");
   return new Promise((resolve, reject) => {
     const collection = require('../libs/mongodb').getCollection(ent_name);
     collection.find(query_paramters).next().then(user => {

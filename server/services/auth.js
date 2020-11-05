@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const KEY = "_[Ask#Al3xXx!]_";
 const ent_name = 'users';
 const md5 = require('md5');
-const EXP_TIME = '30s';
+const EXP_TIME = '5m';
 
 function VerifyToken(token) {
     return new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ function LoginUser(user_name, user_password) {
 function Auth(req, res, next) {
     const token = req.header('Authorization');
     VerifyToken(token).then(data => {
-        res.json(data);
+        next();
     }).catch(err => {
         res.status(401).json(err);
     });

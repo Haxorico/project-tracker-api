@@ -31,7 +31,6 @@ router.post('/', async (req, res, next) => {
   });
 });
 
-
 router.put('/', async (req, res, next) => {
   const user = req.body;
   UserService.UpdateUser(user).then(data => {
