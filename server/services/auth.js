@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const KEY = "_[Ask#Al3xXx!]_";
 const ent_name = 'users';
 const md5 = require('md5');
-const EXP_TIME = '5m';
+const EXP_TIME = '1d';
 
 function VerifyToken(token) {
     return new Promise((resolve, reject) => {
