@@ -16,7 +16,9 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   const id = { id: req.params.id };
-  UserService.GetUser(id).then(data => {
+  const searchObj = {};
+  searchObj.id = id;
+  UserService.GetUser(searchObj).then(data => {
     res.json(data);
   }).catch(err => {
     res.json(err);

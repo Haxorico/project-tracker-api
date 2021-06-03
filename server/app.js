@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 const loginRouter = require('./routes/login');
+const registerRouter = require('./routes/register');
 const usersRouter = require('./routes/users');
 const tasksRouter = require('./routes/tasks');
 const projectsRouter = require('./routes/projects');
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
+app.use('/register', registerRouter);
 app.use('/users', Auth, usersRouter);
 app.use('/tasks', Auth, tasksRouter);
 app.use('/projects', Auth, projectsRouter);
